@@ -1,7 +1,5 @@
 package com.itmo.weblab2.servlet;
 
-import com.itmo.weblab2.service.exceptions.HitCreatingException;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -21,11 +19,12 @@ public class ControllerServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        throw new HitCreatingException("кукуха поехала");
-/*        if (Boolean.parseBoolean(req.getParameter("clear"))) {
+        if (Boolean.parseBoolean(req.getParameter("clear"))) {
             req.getRequestDispatcher("/clear").forward(req, resp);
-        }else{
-            req.getRequestDispatcher("/check").forward(req,resp);
-        }*/
+        } else {
+            req.getRequestDispatcher("/check").forward(req, resp);
+        }
     }
+
+
 }

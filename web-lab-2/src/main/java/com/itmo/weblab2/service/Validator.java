@@ -2,8 +2,6 @@ package com.itmo.weblab2.service;
 
 import com.itmo.weblab2.service.exceptions.WrongValueException;
 
-import java.util.List;
-
 /**
  * Проверяет на null введенные данные
  */
@@ -13,7 +11,8 @@ public class Validator {
     private final double xMax;
     private final double rMin;
     private final double rMax;
-    private final List<Double> yValues;
+    private final double yMin;
+    private final double yMax;
 
     public Validator() {
         this.xMin=-5;
@@ -22,7 +21,9 @@ public class Validator {
         this.rMin=1;
         this.rMax=3;
 
-        this.yValues = List.of(0D,1D,2D,3D);
+        this.yMin=-5;
+        this.yMax=3;
+
     }
 
     public boolean validateValues(double x, double y, double r) throws WrongValueException {
@@ -35,12 +36,12 @@ public class Validator {
     }
 
     private boolean validateRValue(Double rValue) throws WrongValueException {
-        if (rValue>rMin && rValue<rMax) return true;
+        if (rValue>=rMin && rValue<=rMax) return true;
         throw new WrongValueException("Wrong r value");
     }
 
     private boolean validateYValue(Double yValue) throws WrongValueException {
-        if (yValues.contains(yValue)) return true;
+        if (yValue>yMin && yValue<yMax) return true;
         throw new WrongValueException("Wrong y value");
     }
 }

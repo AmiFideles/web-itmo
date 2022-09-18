@@ -17,6 +17,7 @@ export class Validator {
     }
 
     isEmpty(value) {
+        console.log(value)
         return value === null || value.trim().length === 0;
     }
 

@@ -26,7 +26,6 @@ $(document).ready(function () {
         [1, 1.5, 2, 2.5, 3]
     )
 
-
     rSelect.change(() => {
         let r = getRValue();
         if (validator.validateR(r)) {
@@ -58,7 +57,6 @@ $(document).ready(function () {
         }
     });
 
-
     graphSVG.mousemove(event => {
         if (!validator.validateR(getRValue()) && !rSelect.siblings().hasClass("wrong-value")) {
             validator.showErrorMessage(rSelect, validator.CHOOSE_R_LABEL);
@@ -68,7 +66,6 @@ $(document).ready(function () {
         graph.setRawValueY(event.offsetY, yInput);
     })
 
-
     graphSVG.mouseleave(() => {
         graph.resetRawValues();
         validator.deleteErrorMessage(rSelect);
@@ -76,43 +73,10 @@ $(document).ready(function () {
 
     graphSVG.click(() => {
         graph.saveRawValue(xButton, yInput)
+       // if (validator.validateAllInputValues(graph.xValue, graph.yValue, graph.rValue,xButtons,  yInput, rSelect, xButtons )){
+            addHit(graph.xValue, graph.yValue, graph.rValue)
+      //  }
     })
-
-
-    function addRow(x, y, r) {
-        $.ajax({
-            url: 'dispatcher',
-            method: 'POST',
-            timeout: 20000,
-            data: "x=" + x + "&y=" + y + "&r=" + r + "&timezone=" + new Date().getTimezoneOffset(),
-            success: function (data) {
-                let element = $.parseHTML(data);
-                $('#result-table').append(element);
-                addClassHit(element);
-            },
-            error: function (jqXHR, exception) {
-        /*        if (jqXHR.status === 0) {
-                    alert('Not connect. Verify Network.');
-                }*/  if (jqXHR.status === 408) {
-                    alert('Не удалось получить ответ от сервера. Слишком долгая обработка')
-                } else if (jqXHR.status === 400) {
-                    alert('Не валидные данные')
-                } else if (jqXHR.status === 404) {
-                    alert('Requested page not found (404).');
-                } else if (jqXHR.status === 500) {
-                    alert('Internal Server Error (500).');
-                } else if (exception === 'parsererror') {
-                    alert('Requested JSON parse failed.');
-                } else if (exception === 'timeout') {
-                    alert('Time out error.');
-                } else if (exception === 'abort') {
-                    alert('Ajax request aborted.');
-                } else {
-                    alert('Uncaught Error. ' + jqXHR.responseText);
-                }
-            }
-        })
-    }
 
     $('#submit').click((event) => {
         event.preventDefault();
@@ -121,53 +85,60 @@ $(document).ready(function () {
         const r = getRValue();
         if (!validator.validateAllInputValues(x, y, r, xButtons, yInput, rSelect, xButtons)) return;
 
-        addRow(x, y, r);
+        addHit(x, y, r);
+
     })
 
-    $('#clear').click(() => {
+    $('#clear').click((event) => {
+        console.log($("input[name='radio']:checked").val());
         clearTable();
     })
 
     $('#reset').click(() => {
+        console.log($("input[name='radio']:checked").val());
         xButtons.children(".selected").removeClass("selected");
         graph.resetValues();
         validator.deleteAllErrorMessage(xButtons, yInput, rSelect)
     })
 
-
-    function restore() {
+    function addHit(x, y, r) {
+        console.log('проверка')
         $.ajax({
-            url: "dispatcher",
-            type: "POST",
+            url: 'dispatcher',
+            method: 'POST',
+            data: "x=" + x + "&y=" + y + "&r=" + r,
             success: function (data) {
-                if (typeof data == "string") {
-                    console.log(data)
-                    data = JSON.parse(data);
-                    console.log(data)
-                }
+                let element = JSON.parse(data);
                 let newRow;
-                for (let element of data) {
-                    newRow = '<tr>';
-                    newRow += '<td>' + element.x + '</td>';
-                    newRow += '<td>' + element.y + '</td>';
-                    newRow += '<td>' + element.r + '</td>';
-                    newRow += '<td>' + element.currentTime + '</td>';
-                    newRow += '<td>' + element.executionTime + '</td>';
-                    newRow += '<td>' + element.hit + '</td></tr>';
-                    let test = $.parseHTML(newRow);
-                    addClassHit(test);
-                    $('#result-table').append(test);
-                }
+                newRow = '<tr>';
+                newRow += '<td>' + element.xValue + '</td>';
+                newRow += '<td>' + element.yValue + '</td>';
+                newRow += '<td>' + element.rValue + '</td>';
+                newRow += '<td>' + element.result + '</td>';
+                let htmlElement = $.parseHTML(newRow);
+                addClassHit(htmlElement);
+                $('#result-table').append(htmlElement);
+                redrawDot()
+            },
+            error: function (xhr, status, error) {
+                alert(xhr.responseText)
             }
-        });
+        })
     }
 
     function clearTable() {
         $.ajax({
             url: "dispatcher",
             type: "POST",
+            data: "clear=true",
             success: function () {
-                $("#result-table > tr").remove();
+                console.log("ща будем удалять")
+                $("#result-table tbody > tr ").remove();
+                $(".true").remove()
+                $(".false").remove()
+            },
+            error: function (xhr, status, error) {
+                alert(xhr.responseText)
             }
         });
     }
@@ -199,7 +170,40 @@ $(document).ready(function () {
             null;
     }
 
+    function drawDot(xValue, yValue, rValue, result, centreY, centreX) {
+        if (xValue == null || yValue == null) return;
+        const y = centreY - yValue * 100 / rValue;
+        const x = centreX + xValue * 100 / rValue;
 
-    restore();
+        const dot = $(document.createElementNS('http://www.w3.org/2000/svg', 'circle'));
+        dot.attr({
+            cx: x,
+            cy: y,
+            r: 3
+        }).add('circle')
+        dot.addClass(result)
+        graphSVG.append(dot)
+    }
 
+    function redrawDot() {
+
+        $('#result-table tr').each(function (row) {
+            let list = []
+            $(this).find('td').each(function (cell) {
+                console.log('Строка ' + row + ', ячейка ' + cell + ', значение: ' + $(this).html());
+                list.push($(this).html())
+            });
+            console.log(list)
+            // TODO из массива достать числа и добавить в график . Для этого нужно вычилсить координаты
+            let x = list[0];
+            let y = list[1];
+            let r = list[2];
+            let result = list[3];
+
+            drawDot(x, y, r, result, 150, 150)
+
+        })
+    }
+    redrawDot();
 })
+

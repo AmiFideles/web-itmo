@@ -1,4 +1,9 @@
+<%@ page import="com.itmo.weblab2.model.ResultStorage" %>
+<%@ page import="com.itmo.weblab2.model.Hit" %>
+<%@ page import="java.util.List" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%String id = session.getId();%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -184,9 +189,12 @@
             stroke-dasharray: 2;
         }
 
-        circle {
-            stroke: red;
+        .tempCircle {
+            stroke: black;
         }
+
+
+
 
         .dotted-raw-x,
         .dotted-raw-y {
@@ -219,6 +227,16 @@
             background-color: darkgreen;
         }
 
+        .true {
+            stroke: limegreen;
+            fill: limegreen;
+        }
+
+        .false {
+            stroke: #ef5b5b;
+            fill: #ef5b5b;
+        }
+
         #table-header {
             background-color: #d0d0d9;
         }
@@ -226,6 +244,56 @@
         #result-table tr:nth-child(n):hover {
             background-color: #d0d0d9;
         }
+        .form_radio_group {
+            display: inline-block;
+            overflow: hidden;
+        }
+        .form_radio_group-item {
+            display: inline-block;
+            float: left;
+        }
+/*        .form_radio_group input[type=radio] {
+            display: none;
+        }*/
+        .form_radio_group label {
+            display: inline-block;
+            cursor: pointer;
+            padding: 0px 5px;
+            line-height: 24px;
+            border: 1px solid #999;
+            border-right: none;
+            user-select: none;
+        }
+
+        .form_radio_group .form_radio_group-item:first-child label {
+            border-radius: 6px 0 0 6px;
+        }
+        .form_radio_group .form_radio_group-item:last-child label {
+            border-radius: 0 6px 6px 0;
+            border-right: 1px solid #999;
+        }
+
+        /* Checked */
+        .form_radio_group input[type=radio]:checked + label {
+            background: #b2b2e2;
+        }
+
+        /* Hover */
+        .form_radio_group label:hover {
+            color: #666;
+        }
+
+        /* Disabled */
+        .form_radio_group input[type=radio]:disabled + label {
+            background: #efefef;
+            color: #666;
+        }
+
+        .r-select{
+            padding: 6px;
+            width: 50%;
+        }
+
 
     </style>
 </head>
@@ -250,14 +318,13 @@
                 <svg class="svg-graph" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
                     circle
 
-                    <path class="graph-shape" d="M 100 150
-                  A 50, 50, 0, 0, 0, 150 200
+                    <path class="graph-shape" d="M 200 150
+                  A 50, 50, 0, 0, 1, 150 200
                   L 150 150
                   Z" fill="#5ba8ef" fill-opacity="0.5"/>
 
-                    <polygon class="graph-shape" points="150,250 150,150 200,150" fill="#5ba8ef" fill-opacity="0.5"/>
-
-                    <polygon class="graph-shape" points="50,150 50,100 150,100 150,150" fill="#5ba8ef"
+                    <polygon class="graph-shape" points="150,100 150,150 100,150" fill="#5ba8ef" fill-opacity="0.5"/>
+                    <polygon class="graph-shape" points="250,150 250,100 150,100 150,150" fill="#5ba8ef"
                              fill-opacity="0.5"/>
 
                     <text class="graph-axle-text" x="290" y="140">x</text>
@@ -298,51 +365,65 @@
         <div id="form-block" class="content-plate">
 
 
-            <form id="values-form" action="" method="POST">
-
+            <form id="values-form" action="/dispatcher" method="POST">
                 <div id="x-block">
                     <div id="xlabel" class="form-labels">
                         <label>X</label>
                     </div>
-
                     <div id="x-buttons" class="input-areas">
-                        <button class="x-button" type="button" value="-5">-5</button>
-                        <button class="x-button" type="button" value="-4">-4</button>
-                        <button class="x-button" type="button" value="-3">-3</button>
-                        <button class="x-button" type="button" value="-2">-2</button>
-                        <button class="x-button" type="button" value="-1">-1</button>
-                        <button class="x-button" type="button" value="0">0</button>
-                        <button class="x-button" type="button" value="1">1</button>
-                        <button class="x-button" type="button" value="2">2</button>
-                        <button class="x-button" type="button" value="3">3</button>
+                        <input type="text" class="x-button" name="x" autocomplete="off" maxlength="6"
+                               placeholder="Значение от -3 до 3">
                     </div>
                 </div>
-
-
                 <div id="y-block">
                     <div id="ylabel" class="form-labels">
                         <label>Y</label>
                     </div>
-                    <div id="yvalue" class="input-areas">
-                        <input type="text" id="y-input" name="y" autocomplete="off" maxlength="10"
-                               placeholder="Значение от -5 до 3">
+                    <div class="form_radio_group">
+                        <div class="form_radio_group-item">
+                            <input id="radio-1" type="radio" name="radio" value="1">
+                            <label for="radio-1">-2</label>
+                        </div>
+                        <div class="form_radio_group-item">
+                            <input id="radio-2" type="radio" name="radio" value="2">
+                            <label for="radio-2">-1.5</label>
+                        </div>
+                        <div class="form_radio_group-item">
+                            <input id="radio-3" type="radio" name="radio" value="3">
+                            <label for="radio-3">-1</label>
+                        </div>
+                        <div class="form_radio_group-item">
+                            <input id="radio-4" type="radio" name="radio" value="4">
+                            <label for="radio-4">-0.5</label>
+                        </div>
+                        <div class="form_radio_group-item">
+                            <input id="radio-5" type="radio" name="radio" value="4">
+                            <label for="radio-5">0</label>
+                        </div>
+                        <div class="form_radio_group-item">
+                            <input id="radio-6" type="radio" name="radio" value="4">
+                            <label for="radio-6">1</label>
+                        </div>
+                        <div class="form_radio_group-item">
+                            <input id="radio-7" type="radio" name="radio" value="4">
+                            <label for="radio-7">1.5</label>
+                        </div>
+                        <div class="form_radio_group-item">
+                            <input id="radio-8" type="radio" name="radio" value="4">
+                            <label for="radio-8">2</label>
+                        </div>
                     </div>
-
                 </div>
+
 
                 <div id="r-block">
                     <div id="rlabel" class="form-labels">
                         <label>R</label>
                     </div>
+
                     <div id="rselection" class="input-areas">
-                        <select id="r-options" name="r" size="1" required>
-                            <option value="select">Select</option>
-                            <option value="1">1</option>
-                            <option value="1.5">1.5</option>
-                            <option value="2">2</option>
-                            <option value="2.5">2.5</option>
-                            <option value="3">3</option>
-                        </select>
+                        <input type="text" class="r-select" id="r-options" name="r" autocomplete="off" maxlength="6"
+                               placeholder="Значение от 2 до 5">
                     </div>
                 </div>
 
@@ -351,7 +432,6 @@
                     <button class="main-button" id="reset" type="reset" form="values-form">Очистить форму</button>
                     <button class="main-button" id="clear" type="button" form="values-form">Очистить таблицу</button>
                 </div>
-
             </form>
 
         </div>
@@ -367,22 +447,32 @@
         <div id="table-scroll-container">
             <table id="result-table">
                 <thead>
-                <tr id="table-header">
-                    <th class="coords-col">X</th>
-                    <th class="coords-col">Y</th>
-                    <th class="coords-col">R</th>
-                    <th class="time-col">Текущее время</th>
-                    <th class="time-col">Время выполнения</th>
-                    <th class="hitres-col">Попадание</th>
+                <tr>
+                    <th>X</th>
+                    <th>Y</th>
+                    <th>R</th>
+                    <th>Результат попадания</th>
                 </tr>
                 </thead>
+                <tbody>
+                <% ResultStorage result =(ResultStorage) application.getAttribute("result");
+                    if (result!=null){
+                    List<Hit> listHitById = result.getListHitById(session.getId());
+                    if (listHitById!=null) {
+                        for (Hit hit : listHitById ) {%>
+                        <tr>
+                            <td><%=hit.getXValue()%></td>
+                            <td><%=hit.getYValue()%></td>
+                            <td><%=hit.getRValue()%></td>
+                            <td><%=hit.isResult()%></td>
+                        </tr>
+                        <%}}}%>
+                </tbody>
             </table>
         </div>
-
     </div>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script type="module" src="js/main.js"></script>
-<a href="hello-servlet">Hello Servlet</a>
 </body>
 </html>

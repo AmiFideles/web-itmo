@@ -37,7 +37,7 @@ export class Graph {
             cy: y,
             r: 2
         }).add('circle')
-
+        dot.addClass("tempCircle")
         this.graphSVG.append(dot)
 
     }
@@ -51,7 +51,7 @@ export class Graph {
 
 
     removeDot = () => {
-        this.graphSVG.children('circle').remove();
+        this.graphSVG.children('.tempCircle').remove();
     }
 
 

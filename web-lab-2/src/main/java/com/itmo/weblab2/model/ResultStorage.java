@@ -1,28 +1,38 @@
 package com.itmo.weblab2.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class ResultStorage {
     private Map<String, List<Hit>> resultMap;
 
-    private void addResult(String id, Hit hit){
-        List<Hit> hits = resultMap.get(id);
-        hits.add(hit);
+    public ResultStorage() {
+        this.resultMap = new HashMap<>();
     }
 
-    private boolean checkId(String id){
+    public void createListHit(String id){
+        ArrayList<Hit> hits = new ArrayList<>();
+        resultMap.put(id, hits);
+    }
+
+    public boolean checkId(String id){
         return resultMap.containsKey(id);
     }
 
+    public void addHit(String id, Hit hit ){
+        resultMap.get(id).add(hit);
+    }
 
+    public List<Hit> getListHitById(String id){
+        return  resultMap.get(id);
+    }
+
+    public void clearListHit(String id){
+        resultMap.remove(id);
+    }
 }
