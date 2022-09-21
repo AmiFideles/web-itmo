@@ -3,11 +3,11 @@
 <%@ page import="java.util.List" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%String id = session.getId();%>
 <!DOCTYPE html>
 <html>
 <head>
     <title>web-1</title>
+    <link rel="icon" href="img/cse_logo.png">
     <style>
         body {
             font-size: 16px;
@@ -36,6 +36,10 @@
         }
 
         .x-button {
+            font-size: 16px;
+        }
+        .r-select{
+            padding: 3px;
             font-size: 16px;
         }
 
@@ -220,11 +224,11 @@
         }
 
         .miss {
-            background-color: darkred;
+            background-color: #ef5b5b;
         }
 
         .hit {
-            background-color: darkgreen;
+            background-color: limegreen;
         }
 
         .true {
@@ -252,9 +256,9 @@
             display: inline-block;
             float: left;
         }
-/*        .form_radio_group input[type=radio] {
+        .form_radio_group input[type=radio] {
             display: none;
-        }*/
+        }
         .form_radio_group label {
             display: inline-block;
             cursor: pointer;
@@ -289,10 +293,7 @@
             color: #666;
         }
 
-        .r-select{
-            padding: 6px;
-            width: 50%;
-        }
+
 
 
     </style>
@@ -381,36 +382,40 @@
                     </div>
                     <div class="form_radio_group">
                         <div class="form_radio_group-item">
-                            <input id="radio-1" type="radio" name="radio" value="1">
+                            <input id="radio-1" type="radio" name="radio" value="-2">
                             <label for="radio-1">-2</label>
                         </div>
                         <div class="form_radio_group-item">
-                            <input id="radio-2" type="radio" name="radio" value="2">
+                            <input id="radio-2" type="radio" name="radio" value="-1.5">
                             <label for="radio-2">-1.5</label>
                         </div>
                         <div class="form_radio_group-item">
-                            <input id="radio-3" type="radio" name="radio" value="3">
+                            <input id="radio-3" type="radio" name="radio" value="-1">
                             <label for="radio-3">-1</label>
                         </div>
                         <div class="form_radio_group-item">
-                            <input id="radio-4" type="radio" name="radio" value="4">
+                            <input id="radio-4" type="radio" name="radio" value="-0.5">
                             <label for="radio-4">-0.5</label>
                         </div>
                         <div class="form_radio_group-item">
-                            <input id="radio-5" type="radio" name="radio" value="4">
+                            <input id="radio-5" type="radio" name="radio" value="0">
                             <label for="radio-5">0</label>
                         </div>
                         <div class="form_radio_group-item">
-                            <input id="radio-6" type="radio" name="radio" value="4">
-                            <label for="radio-6">1</label>
+                            <input id="radio-6" type="radio" name="radio" value="0.5">
+                            <label for="radio-6">0.5</label>
                         </div>
                         <div class="form_radio_group-item">
-                            <input id="radio-7" type="radio" name="radio" value="4">
-                            <label for="radio-7">1.5</label>
+                            <input id="radio-7" type="radio" name="radio" value="1">
+                            <label for="radio-7">1</label>
                         </div>
                         <div class="form_radio_group-item">
-                            <input id="radio-8" type="radio" name="radio" value="4">
-                            <label for="radio-8">2</label>
+                            <input id="radio-8" type="radio" name="radio" value="1.5">
+                            <label for="radio-8">1.5</label>
+                        </div>
+                        <div class="form_radio_group-item">
+                            <input id="radio-9" type="radio" name="radio" value="2">
+                            <label for="radio-9">2</label>
                         </div>
                     </div>
                 </div>
@@ -422,7 +427,7 @@
                     </div>
 
                     <div id="rselection" class="input-areas">
-                        <input type="text" class="r-select" id="r-options" name="r" autocomplete="off" maxlength="6"
+                        <input type="text" class="r-select" id="r-options" name="r" autocomplete="off" maxlength="3"
                                placeholder="Значение от 2 до 5">
                     </div>
                 </div>
@@ -460,7 +465,7 @@
                     List<Hit> listHitById = result.getListHitById(session.getId());
                     if (listHitById!=null) {
                         for (Hit hit : listHitById ) {%>
-                        <tr>
+                        <tr class="<%=hit.isResult()?"hit":"miss"%>">
                             <td><%=hit.getXValue()%></td>
                             <td><%=hit.getYValue()%></td>
                             <td><%=hit.getRValue()%></td>

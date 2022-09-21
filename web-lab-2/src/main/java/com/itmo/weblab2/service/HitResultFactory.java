@@ -33,10 +33,8 @@ public class HitResultFactory {
             if (inputValue==null){
                 throw new HitCreatingException("Cannot parse input value to double");
             }
-            System.out.println(inputValue);
             return Double.parseDouble(inputValue);
         } catch (NumberFormatException e) {
-            System.out.println(e.getMessage());
             throw new HitCreatingException("Cannot parse input value to double");
         }
     }

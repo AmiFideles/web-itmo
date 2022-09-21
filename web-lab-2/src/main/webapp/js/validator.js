@@ -1,23 +1,26 @@
 export class Validator {
-    xValues;
-    yMin;
-    yMax;
-    rValues;
+    yValues;
+    xMin;
+    xMax;
+    rMin;
+    rMax;
     CHOOSE_X_LABEL = 'Необходимо выбрать Х';
     CHOOSE_Y_LABEL = 'Необходимо выбрать Y';
     CHOOSE_R_LABEL = 'Необходимо выбрать R';
-    WRONG_Y_LABEL = 'Y должен быть от -5 до 3';
+    WRONG_Y_LABEL = 'Y должен входить в {-2,-1.5,-1,-0.5,0,0.5,1,1.5,2}';
+    WRONG_X_LABEL = 'X должен быть от -3 до 3';
+    WRONG_R_LABEL = 'R должен быть от 2 до 5';
 
 
-    constructor(xValues, yMin, yMax, rValues) {
-        this.xValues = xValues;
-        this.yMin = yMin;
-        this.yMax = yMax;
-        this.rValues = rValues;
+    constructor(xMin,xMax, yValues, rMin,rMax) {
+        this.xMin=xMin;
+        this.xMax=xMax;
+        this.yValues=yValues;
+        this.rMin = rMin;
+        this.rMax = rMax;
     }
 
     isEmpty(value) {
-        console.log(value)
         return value === null || value.trim().length === 0;
     }
 
@@ -25,16 +28,16 @@ export class Validator {
         return !isNaN(value) || isFinite(value);
     }
 
-    checkX(value) {
-        return this.xValues.includes(value)
+    checkY(value) {
+        return this.yValues.includes(value)
     }
 
-    checkY(value) {
-        return value >= this.yMin && value <= this.yMax;
+    checkX(value) {
+        return value >= this.xMin && value <= this.xMax;
     }
 
     checkR(value) {
-        return this.rValues.includes(value)
+        return value >= this.rMin && value <= this.rMax;
     }
 
 
@@ -44,7 +47,7 @@ export class Validator {
 
 
     validateY(yValue) {
-        return !this.isEmpty(yValue) && this.checkY(yValue);
+        return !this.isEmpty(yValue) && this.checkY(Number(yValue));
     }
 
     validateR(rValue) {
@@ -55,7 +58,11 @@ export class Validator {
         this.deleteAllErrorMessage(xButtons, yInput, rSelect);
         let valid = true;
         if (!this.validateX(xValue)) {
-            this.showErrorMessage(xButton, this.CHOOSE_X_LABEL);
+            if (this.isEmpty(xValue)){
+                this.showErrorMessage(xButton, this.CHOOSE_X_LABEL)
+            }else{
+                this.showErrorMessage(xButton, this.WRONG_X_LABEL);
+            }
             valid = false;
         }
         if (!this.validateY(yValue)) {
@@ -67,7 +74,11 @@ export class Validator {
             valid = false;
         }
         if (!this.validateR(rValue)) {
-            this.showErrorMessage(rSelect, this.CHOOSE_R_LABEL);
+            if (this.isEmpty(rValue)) {
+                this.showErrorMessage(rSelect, this.CHOOSE_R_LABEL);
+            } else {
+                this.showErrorMessage(rSelect, this.WRONG_R_LABEL);
+            }
             valid = false;
         }
         return valid;

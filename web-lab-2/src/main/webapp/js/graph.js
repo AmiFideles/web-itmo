@@ -162,8 +162,22 @@ export class Graph {
         this.rawValueY = null;
         this.rawValueX = null;
     }
+    //TODO из за того, что теперь х принимает интервал значений, а y фиксировано все рушится. Переделать
+    setRawValueX(rawValueX, xButton){
+        if (this.rValue == null || rawValueX == null) return;
+        this.graphSVG.children('.dotted-raw-x').remove();
+        this.rawValueX = (rawValueX-this.centreX)*this.rValue/100;
+        const line = $(document.createElementNS('http://www.w3.org/2000/svg', 'line'))
+        line.attr({
+            x1:rawValueX,
+            x2:rawValueX,
+            y1: 0,
+            y2: 300,
+        }).addClass('dotted-raw-x')
+        this.graphSVG.append(line)
+    }
 
-    setRawValueX(rawValueX, xButton) {
+    /*    setRawValueX(rawValueX, xButton) {
         if (this.rValue == null || rawValueX == null) return;
         this.graphSVG.children('.dotted-raw-x').remove();
         const x = (rawValueX - this.centreX) * this.rValue / 100;
@@ -181,9 +195,28 @@ export class Graph {
                 this.graphSVG.append(line)
             }
         });
-    };
+    };*/
 
-    setRawValueY = (rawValueY) => {
+    setRawValueY  = (rawValueY, yInput)=>{
+        if (this.rValue == null || rawValueY == null) return;
+        this.graphSVG.children('.dotted-raw-y').remove();
+        const y = (this.centreY-rawValueY)*this.rValue/100;
+        yInput.each((index,element)=>{
+            const value = Number(element.value);
+            if (value-0.25<y && value +0.25>=y){
+                this.rawValueY = value;
+                const line = $(document.createElementNS('http://www.w3.org/2000/svg', 'line'))
+                line.attr({
+                    x1: 0,
+                    x2: 300,
+                    y1: this.centreY - value * 100 / this.rValue,
+                    y2: this.centreY - value * 100 / this.rValue
+                }).addClass('dotted-raw-y');
+                this.graphSVG.append(line)
+            }
+        })
+    }
+/*    setRawValueY = (rawValueY) => {
         if (this.rValue == null || rawValueY == null) return;
         this.graphSVG.children('.dotted-raw-y').remove();
         this.rawValueY = (this.centreY - rawValueY) * this.rValue / 100;
@@ -197,19 +230,30 @@ export class Graph {
         }).addClass('dotted-raw-y');
 
         this.graphSVG.append(line)
-    }
+    }*/
 
     saveRawValue = (xButton, yInput) => {
         if (this.rawValueX == null || this.rawValueY == null) return;
 
-        xButton.each((index, element) => {
+        // переделать нажатие на х и y
+
+        xButton.val(this.rawValueX)
+        xButton.keyup();
+
+
+/*        xButton.each((index, element) => {
             let x = Number($(element).val());
             if (x === this.rawValueX) {
                 $(element).click();
             }
+        })*/
+        yInput.each((index, element)=>{
+            let y = Number($(element).val());
+            if (y === this.rawValueY){
+                $(element).click();
+            }
         })
-
-        yInput.val(this.rawValueY);
-        yInput.keyup();
+/*        yInput.val(this.rawValueY);
+        yInput.keyup();*/
     }
 }

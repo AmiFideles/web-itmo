@@ -1,12 +1,12 @@
 package com.itmo.weblab2.servlet;
 
-import com.google.gson.Gson;
 import com.itmo.weblab2.model.Hit;
 import com.itmo.weblab2.model.ResultStorage;
 import com.itmo.weblab2.service.Checker;
 import com.itmo.weblab2.service.HitResultFactory;
 import com.itmo.weblab2.service.Validator;
 import com.itmo.weblab2.service.exceptions.HitCreatingException;
+import com.itmo.weblab2.utils.GsonHelper;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,9 +20,11 @@ import java.util.List;
 @WebServlet(name = "areaCheck", value = "/check")
 public class AreaCheckServlet extends HttpServlet {
     private HitResultFactory hitResultFactory;
+    private GsonHelper gsonHelper;
 
     @Override
     public void init() throws ServletException {
+        this.gsonHelper = new GsonHelper();
         this.hitResultFactory = new HitResultFactory(new Checker(), new Validator());
         getServletContext().setAttribute("result", new ResultStorage());
     }
@@ -43,7 +45,7 @@ public class AreaCheckServlet extends HttpServlet {
             List<Hit> hits = result.getListHitById(id);
             hits.add(hit);
             getServletContext().setAttribute("result", result);
-            writer.write(getJSONFromObject(hit));
+            writer.write(gsonHelper.getJsonFromObject(hit));
         } catch (HitCreatingException e) {
             resp.setStatus(400);
             writer.write(e.getMessage());
@@ -52,8 +54,4 @@ public class AreaCheckServlet extends HttpServlet {
         }
     }
 
-    private String getJSONFromObject(Hit hit){
-        Gson gson = new Gson();
-        return gson.toJson(hit);
-    }
 }
